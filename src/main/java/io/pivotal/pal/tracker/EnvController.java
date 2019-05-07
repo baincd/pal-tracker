@@ -1,13 +1,11 @@
 package io.pivotal.pal.tracker;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executors;
 
 @RestController
 public class EnvController {
@@ -37,12 +35,5 @@ public class EnvController {
         return map;
     }
 
-    @GetMapping("/stop")
-    public String stop() {
-    	Executors
-    		.newSingleThreadScheduledExecutor()
-    		.schedule(() -> {System.exit(1);}, 10, SECONDS);
-    	return "stop scheduled...";
-        
-    }
+
 }
