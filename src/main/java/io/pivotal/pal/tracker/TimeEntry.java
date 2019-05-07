@@ -10,7 +10,11 @@ public class TimeEntry {
     private LocalDate date;
     private int hours;
 
-    public TimeEntry(long projectId, long userId, LocalDate parse, int i) {
+    public TimeEntry(long projectId, long userId, LocalDate date, int hrs) {
+        this.projectId = projectId;
+        this.userId = userId;
+        this.date = date;
+        this.hours = hrs;
     }
 
     public TimeEntry(long timeEntryId, long projectId, long userId, LocalDate parse, int i) {
@@ -39,7 +43,7 @@ public class TimeEntry {
         return true;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

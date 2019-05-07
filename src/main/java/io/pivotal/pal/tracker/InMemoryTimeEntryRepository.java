@@ -44,6 +44,9 @@ public class InMemoryTimeEntryRepository implements TimeEntryRepository {
         if (idx == -1) {
             return null;
         }
+        data.remove(idx);
+        timeEntry.setId(id);
+        data.add(idx, timeEntry);
         return data.get(idx);
     }
 
