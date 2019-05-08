@@ -3,6 +3,8 @@ package io.pivotal.pal.tracker;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
@@ -16,13 +18,14 @@ import java.util.List;
 public class JdbcTimeEntryRepository implements TimeEntryRepository {
 
     private JdbcTemplate jdbcTemplate;
+    private NamedParameterJdbcTemplate njdbcTemplate;
 
     public JdbcTimeEntryRepository(DataSource ds) {
         jdbcTemplate = new JdbcTemplate(ds);
+        njdbcTemplate = new NamedParameterJdbcTemplate(ds);
     }
 
-    @Override
-    public TimeEntry create(TimeEntry timeEntry) {
+    public TimeEntry createORIG(TimeEntry timeEntry) {
         KeyHolder generatedKeyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -42,6 +45,26 @@ public class JdbcTimeEntryRepository implements TimeEntryRepository {
 
         return find(generatedKeyHolder.getKey().longValue());
     }
+
+    @Override
+    public TimeEntry create(TimeEntry timeEntry) {
+        KeyHolder generatedKeyHolder = new GeneratedKeyHolder();
+
+        njdbcTemplate.update(
+                    "INSERT INTO time_entries (project_id, user_id, date, hours) " +
+                            "VALUES (:project_id, :userId, :dt, :hrs)",
+                    new MapSqlParameterSource()
+                            .addValue("project_id", timeEntry.getProjectId())
+                            .addValue("userId", timeEntry.getUserId())
+                            .addValue("dt", Date.valueOf(timeEntry.getDate()))
+                            .addValue("hrs", timeEntry.getHours()),
+                generatedKeyHolder
+            );
+
+
+        return find(generatedKeyHolder.getKey().longValue());
+    }
+
 
     @Override
     public TimeEntry find(Long id) {
